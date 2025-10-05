@@ -18,5 +18,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // EntityGraph
     @EntityGraph(attributePaths = {"comments"})
+    @Query("select p from Post p")
     List<Post> findAllWithEntityGraph();
 }

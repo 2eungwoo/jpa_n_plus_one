@@ -33,21 +33,20 @@ class NPlusOneTest extends Specification {
     }
 
     @Transactional
-    def "1. Batch Size 테스트 (application.yml 설정)"() {
+    def "1. Batch Size 테스트 (배치사이즈20)"() {
         given:
         println "\n\n--- [실행] 1. Batch Size 테스트 ---"
-        println "(주의: application.yml의 default_batch_fetch_size=100 설정이 적용됩니다.)"
 
         when:
-        println "--- Post 조회 (1번의 쿼리) ---"
+        println "--- findAll() 조회 ---"
         List<Post> posts = postRepository.findAllPosts()
 
         then:
-        println "--- 각 Post의 Comment 접근 시, IN 절을 사용해 한번에 조회 (1번의 추가 쿼리) ---"
+        println "--- batch size 적용한 연관관계 접근 -> In절 사용---"
         posts.each { post ->
-            println "[로그] Post: ${post.getTitle()}, 댓글 수: ${post.getComments().size()}"
+            post.getComments().size()
         }
-        println "--- [종료] 1. Batch Size 테스트 ---"
+        println "--- [종료] Batch Size 테스트 ---"
     }
 
     @Transactional
@@ -56,13 +55,13 @@ class NPlusOneTest extends Specification {
         println "\n\n--- [실행] 2. Fetch Join 테스트 ---"
 
         when:
-        println "--- Post와 Comment를 한번에 조회 (1번의 쿼리) ---"
+        println "--- findAll() 조회 ---"
         List<Post> posts = postRepository.findAllWithFetchJoin()
 
         then:
-        println "--- 이미 로딩된 Comment 사용 (추가 쿼리 없음) ---"
+        println "--- 이미 로딩된 Comment 사용 ---"
         posts.each { post ->
-            println "[로그] Post: ${post.getTitle()}, 댓글 수: ${post.getComments().size()}"
+            post.getComments().size()
         }
         println "--- [종료] 2. Fetch Join 테스트 ---"
     }
@@ -77,9 +76,9 @@ class NPlusOneTest extends Specification {
         List<Post> posts = postRepository.findAllWithEntityGraph()
 
         then:
-        println "--- 이미 로딩된 Comment 사용 (추가 쿼리 없음) ---"
+        println "--- 이미 로딩된 Comment 사용  ---"
         posts.each { post ->
-            println "[로그] Post: ${post.getTitle()}, 댓글 수: ${post.getComments().size()}"
+            post.getComments().size()
         }
         println "--- [종료] 3. EntityGraph 테스트 ---"
     }
